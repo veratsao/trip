@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>福岡 5 天 4 夜聖誕美食漫遊</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#f97316',
+              darkorange: '#ea580c',
+              lightorange: '#ffedd5',
+              bg: '#09090b',
+              card: '#18181b',
+              border: '#27272a',
+              muted: '#a1a1aa'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .active-tab {
+      color: #f97316 !important;
+    }
+    .active-day {
+      background-color: #f97316 !important;
+      color: #ffffff !important;
+      border-color: #f97316 !important;
+    }
+    #toast-banner {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen max-w-md mx-auto bg-zinc-950 border-x border-zinc-800 shadow-2xl relative overflow-hidden">
+
+  <!-- 頂部浮動字幕通知 (Toast) -->
+  <div id="toast-banner" class="absolute top-3 left-4 right-4 z-50 transform -translate-y-16 opacity-0 pointer-events-none transition-all duration-300">
+    <div id="toast-content" class="bg-zinc-900 border border-orange-500/30 text-white px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs">
+      <i id="toast-icon" class="fa-solid fa-circle-check text-orange-500 text-sm"></i>
+      <span id="toast-text" class="font-medium">雲端備份成功！</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 p-4 sticky top-0 z-35 flex justify-between items-center">
+    <div>
+      <div class="flex items-center gap-2">
+        <i class="fa-solid font-bold text-orange-500 fa-plane-departure"></i>
+        <h1 class="text-lg font-bold tracking-wide text-white">福岡聖誕漫遊</h1>
+      </div>
+      <p class="text-xs text-zinc-400 mt-0.5">2026/12/22 - 12/26 (5天4夜)</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="syncToCloud()" class="text-xs px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-500 border border-orange-500/30 font-medium hover:bg-orange-500 hover:text-white transition" title="手動備份至 Google 雲端">
+        <i class="fa-solid fa-cloud-arrow-up mr-1"></i>雲端備份
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 overflow-y-auto custom-scrollbar pb-24 p-4" id="main-content">
+
+    <!-- 1. 行程頁 (Itinerary Page) -->
+    <section id="tab-itinerary" class="space-y-4">
+      <div class="sticky top-0 z-20 bg-zinc-950/95 pt-1 pb-3 backdrop-blur">
+        <div class="flex gap-2 overflow-x-auto custom-scrollbar">
+          <button onclick="filterDay(0)" id="day-btn-0" class="day-btn active-day flex-shrink-0 px-3.5 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold bg-zinc-900 text-zinc-300 transition-all">
+            全部行程
+          </button>
+          <button onclick="filterDay(1)" id="day-btn-1" class="day-btn flex-shrink-0 px-3.5 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold bg-zinc-900 text-zinc-300 transition-all">
+            Day 1 (12/22)
+          </button>
+          <button onclick="filterDay(2)" id="day-btn-2" class="day-btn flex-shrink-0 px-3.5 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold bg-zinc-900 text-zinc-300 transition-all">
+            Day 2 (12/23)
+          </button>
+          <button onclick="filterDay(3)" id="day-btn-3" class="day-btn flex-shrink-0 px-3.5 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold bg-zinc-900 text-zinc-300 transition-all">
+            Day 3 (12/24)
+          </button>
+          <button onclick="filterDay(4)" id="day-btn-4" class="day-btn flex-shrink-0 px-3.5 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold bg-zinc-900 text-zinc-300 transition-all">
+            Day 4 (12/25)
+          </button>
+          <button onclick="filterDay(5)" id="day-btn-5" class="day-btn flex-shrink-0 px-3.5 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold bg-zinc-900 text-zinc-300 transition-all">
+            Day 5 (12/26)
+          </button>
+        </div>
+      </div>
+
+      <div id="itinerary-list" class="relative pl-6 border-l-2 border-orange-500/40 space-y-6 ml-2 my-2"></div>
+    </section>
+
+    <!-- 2. 購物清單頁 (Shopping Page) -->
+    <section id="tab-shopping" class="space-y-4 hidden">
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-white"><i class="fa-solid fa-bag-shopping text-orange-500 mr-1.5"></i>採購進度</span>
+          <span id="shop-progress-text" class="text-orange-500 font-bold">0%</span>
+        </div>
+        <div class="w-full bg-zinc-950 rounded-full h-2 overflow-hidden border border-zinc-800">
+          <div id="shop-progress-bar" class="bg-orange-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-cart-plus text-orange-500"></i>新增欲購商品
+        </h3>
+        <div class="space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" id="shop-item-name" placeholder="商品名稱 (例: 茅乃舍高湯)" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+            <select id="shop-category" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+              <option value="伴手禮/美食">🍡 伴手禮/食品</option>
+              <option value="藥妝/彩妝">💄 藥妝/彩妝</option>
+              <option value="服飾/包款">👕 服飾/鞋包</option>
+              <option value="電器/雜貨">🔌 電器/雜貨</option>
+              <option value="其他">📌 其他</option>
+            </select>
+          </div>
+          <input type="text" id="shop-note" placeholder="數量、規格或購買地點備註..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+          
+          <div class="flex items-center gap-2 pt-1">
+            <label class="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl p-2 text-xs text-zinc-400 flex items-center justify-center gap-2 cursor-pointer hover:border-orange-500/50 transition">
+              <i class="fa-solid fa-camera text-orange-500"></i>
+              <span id="shop-img-label">上傳參考照片</span>
+              <input type="file" id="shop-img-input" accept="image/*" onchange="previewShopImage(event)" class="hidden">
+            </label>
+            <div id="shop-img-preview-container" class="hidden w-10 h-10 rounded-lg overflow-hidden border border-zinc-700 flex-shrink-0 relative">
+              <img id="shop-img-preview" class="w-full h-full object-cover">
+            </div>
+          </div>
+
+          <button onclick="addShoppingItem()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-orange-500/20">
+            新增至購物清單
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold text-zinc-400 px-1">購物清單（勾選即表示已購買）</h4>
+        <div id="shopping-list" class="space-y-2.5"></div>
+      </div>
+    </section>
+
+    <!-- 3. 收藏頁 (Favorites Page) -->
+    <section id="tab-favorites" class="space-y-4 hidden">
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-bookmark text-orange-500"></i>新增備用地點/口袋名單
+        </h3>
+        <div class="space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" id="fav-name" placeholder="地點名稱 (例: 一蘭拉麵)" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+            <select id="fav-category" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+              <option value="美食">🍽️ 美食餐廳</option>
+              <option value="景點">⛩️ 觀光景點</option>
+              <option value="購物">🛍️ 購物商場</option>
+              <option value="其他">📌 其他地點</option>
+            </select>
+          </div>
+          <input type="text" id="fav-note" placeholder="備註或特色說明" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+          <button onclick="addFavorite()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-orange-500/20">
+            儲存至收藏清單
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold text-zinc-400 px-1">已儲存的口袋名單</h4>
+        <div id="favorites-list" class="space-y-2.5"></div>
+      </div>
+    </section>
+
+    <!-- 4. 記帳頁 (Expense Page) -->
+    <section id="tab-expense" class="space-y-5 hidden">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+          <p class="text-xs text-zinc-400">總支出金額</p>
+          <p class="text-xl font-bold text-orange-500 mt-1" id="total-expense">¥ 0</p>
+        </div>
+        <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+          <p class="text-xs text-zinc-400">人均費用</p>
+          <p class="text-xl font-bold text-white mt-1" id="avg-expense">¥ 0</p>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-users text-orange-500"></i>同行分帳成員
+          </h3>
+          <span class="text-xs text-zinc-500">可新增或刪除</span>
+        </div>
+        <div class="flex flex-wrap gap-2" id="member-chips"></div>
+        <div class="flex gap-2 pt-1">
+          <input type="text" id="new-member-input" placeholder="輸入成員姓名..." class="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-orange-500">
+          <button onclick="addMember()" class="bg-zinc-800 text-orange-500 border border-orange-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-orange-500 hover:text-white transition">新增成員</button>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-receipt text-orange-500"></i>登記新支出
+        </h3>
+        <div class="space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="date" id="exp-date" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+            <input type="text" id="exp-item" placeholder="消費項目 (例: 牛腸鍋)" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="number" id="exp-amount" placeholder="總金額 (日圓 ¥)" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+            <select id="exp-payer" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500"></select>
+          </div>
+          <div class="pt-1">
+            <p class="text-xs text-zinc-400 mb-2">參與分帳人員 (直接勾選)：</p>
+            <div id="split-members-checkboxes" class="flex flex-wrap gap-2 bg-zinc-950 p-2.5 rounded-xl border border-zinc-800"></div>
+          </div>
+          <button onclick="addExpense()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-orange-500/20">
+            新增這筆記帳
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-2">
+        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-calculator text-orange-500"></i>分帳結算 (誰給誰多少錢)
+        </h3>
+        <div id="settlement-list" class="space-y-1.5 text-xs text-zinc-300 pt-1"></div>
+      </div>
+
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-list-check text-orange-500"></i>消費明細
+        </h3>
+        <div id="expense-history" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar"></div>
+      </div>
+    </section>
+
+    <!-- 5. 行前準備頁 (Prep Page) -->
+    <section id="tab-prep" class="space-y-4 hidden">
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-white">準備進度</span>
+          <span id="prep-progress-text" class="text-orange-500 font-bold">0%</span>
+        </div>
+        <div class="w-full bg-zinc-950 rounded-full h-2 overflow-hidden border border-zinc-800">
+          <div id="prep-progress-bar" class="bg-orange-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <input type="text" id="new-prep-input" placeholder="新增準備物品或事項..." class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500">
+        <button onclick="addPrepItem()" class="bg-orange-500 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-600 transition">新增</button>
+      </div>
+
+      <div id="prep-list" class="space-y-2"></div>
+    </section>
+
+    <!-- 6. 設定頁 (Settings Page) -->
+    <section id="tab-settings" class="space-y-4 hidden">
+      <!-- 雲端試算表同步與下載 -->
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-cloud text-orange-500"></i>Google 雲端試算表同步
+        </h3>
+        <p class="text-[11px] text-zinc-400">請在此貼上您的 Google Apps Script 網頁應用程式部署網址。</p>
+        <div class="space-y-2">
+          <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-orange-500">
+          <div class="flex gap-2">
+            <button onclick="saveGasUrl()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-orange-500/20">
+              儲存網址
+            </button>
+            <button onclick="testGasConnection()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2.5 rounded-xl text-xs font-semibold border border-zinc-700 transition">
+              測試連線
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-zinc-800/80 space-y-2">
+          <button onclick="loadFromCloud(true)" class="w-full bg-zinc-800 hover:bg-zinc-700 text-orange-400 font-semibold py-2.5 rounded-xl text-xs border border-orange-500/30 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-cloud-arrow-down"></i>從雲端下載最新資料更新手機
+          </button>
+          <p class="text-[10px] text-zinc-500 text-center">提示：點擊上方按鈕才會覆蓋手機資料為雲端最新版</p>
+        </div>
+      </div>
+
+      <!-- 本地檔案備份與還原 -->
+      <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-file-arrow-down text-orange-500"></i>本地檔案備份與還原
+        </h3>
+        <p class="text-[11px] text-zinc-400">您可以將目前的資料下載為 JSON 檔案保留，或上傳檔案還原。</p>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="exportBackupFile()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 font-semibold py-2.5 rounded-xl text-xs border border-zinc-700 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-download"></i>下載備份檔
+          </button>
+          <label class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold py-2.5 rounded-xl text-xs border border-zinc-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-upload"></i>還原備份檔
+            <input type="file" id="import-file-input" accept=".json" onchange="importBackupFile(event)" class="hidden">
+          </label>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Bar (6 個頁籤) -->
+  <nav class="bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-30 flex justify-around py-2">
+    <button onclick="switchTab('itinerary')" id="nav-itinerary" class="flex flex-col items-center gap-0.5 active-tab text-zinc-400 hover:text-orange-500 transition">
+      <i class="fa-solid fa-map-location-dot text-base"></i>
+      <span class="text-[9px] font-medium">行程</span>
+    </button>
+    <button onclick="switchTab('shopping')" id="nav-shopping" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-orange-500 transition">
+      <i class="fa-solid fa-bag-shopping text-base"></i>
+      <span class="text-[9px] font-medium">購物</span>
+    </button>
+    <button onclick="switchTab('favorites')" id="nav-favorites" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-orange-500 transition">
+      <i class="fa-solid fa-bookmark text-base"></i>
+      <span class="text-[9px] font-medium">收藏</span>
+    </button>
+    <button onclick="switchTab('expense')" id="nav-expense" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-orange-500 transition">
+      <i class="fa-solid fa-wallet text-base"></i>
+      <span class="text-[9px] font-medium">記帳</span>
+    </button>
+    <button onclick="switchTab('prep')" id="nav-prep" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-orange-500 transition">
+      <i class="fa-solid fa-square-check text-base"></i>
+      <span class="text-[9px] font-medium">準備</span>
+    </button>
+    <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-orange-500 transition">
+      <i class="fa-solid fa-gear text-base"></i>
+      <span class="text-[9px] font-medium">設定</span>
+    </button>
+  </nav>
+
+  <!-- 彈跳視窗：檢視照片大圖 -->
+  <div id="modal-image-lightbox" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 cursor-pointer" onclick="closeImageModal()">
+    <img id="lightbox-img" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl object-contain border border-zinc-800">
+  </div>
+
+  <!-- 彈跳視窗：加入行程 -->
+  <div id="modal-add-to-itinerary" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 w-full max-w-xs space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="text-xs font-bold text-white" id="modal-place-title">將地點加入行程</h3>
+        <i class="fa-solid fa-xmark text-zinc-400 hover:text-white cursor-pointer" onclick="closeAddToItineraryModal()"></i>
+      </div>
+      <p class="text-[11px] text-zinc-400">請選擇要排入的日期與時間：</p>
+      
+      <div class="space-y-2">
+        <div>
+          <label class="text-[10px] text-zinc-500">選擇天數：</label>
+          <select id="modal-target-day" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2 text-xs text-white mt-1">
+            <option value="1">Day 1 (12/22 週二)</option>
+            <option value="2">Day 2 (12/23 週三)</option>
+            <option value="3">Day 3 (12/24 週四)</option>
+            <option value="4">Day 4 (12/25 週五)</option>
+            <option value="5">Day 5 (12/26 週六)</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] text-zinc-500">時間：</label>
+            <input type="text" id="modal-target-time" value="15:00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2 text-xs text-white mt-1">
+          </div>
+          <div>
+            <label class="text-[10px] text-zinc-500">交通：</label>
+            <input type="text" id="modal-target-transit" value="步行" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2 text-xs text-white mt-1">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeAddToItineraryModal()" class="flex-1 bg-zinc-800 text-zinc-300 py-2 rounded-xl text-xs font-semibold">取消</button>
+        <button onclick="confirmAddToItinerary()" class="flex-1 bg-orange-500 text-white py-2 rounded-xl text-xs font-bold">確認加入</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 頂部字幕提示 (Toast) ---
+    function showToast(message, type = 'success') {
+      const banner = document.getElementById('toast-banner');
+      const text = document.getElementById('toast-text');
+      const icon = document.getElementById('toast-icon');
+
+      text.innerText = message;
+      if (type === 'success') {
+        icon.className = "fa-solid fa-circle-check text-orange-500 text-sm";
+      } else {
+        icon.className = "fa-solid fa-triangle-exclamation text-yellow-500 text-sm";
+      }
+
+      banner.classList.remove('-translate-y-16', 'opacity-0');
+      banner.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        banner.classList.remove('translate-y-0', 'opacity-100');
+        banner.classList.add('-translate-y-16', 'opacity-0');
+      }, 2500);
+    }
+
+    // --- 本地與雲端資料持久化核心 ---
+    const STORAGE_KEY = "fukuoka_trip_data_v2";
+
+    let defaultItinerary = [
+      {
+        day: 1,
+        date: "12/22 (週二)",
+        title: "抵達天神 ➔ 武蔵牛まぶし ➔ 聖誕市集與熱騰騰牛腸鍋",
+        events: [
+          { time: "11:00", title: "抵達福岡機場", transit: "搭地鐵空港線 (11分鐘)", budget: "¥260", highlight: "直達天神市中心", map: "福岡機場" },
+          { time: "11:40 - 12:00", title: "福岡天神東方快捷飯店 Check-in", transit: "步行", budget: "-", highlight: "寄放行李準備出發", map: "福岡天神東方快捷飯店" },
+          { time: "12:30 - 14:00", title: "午餐：博多牛まぶし武蔵（天神店）", transit: "步行約 8 分鐘", budget: "約 ¥2,000–4,000/人", highlight: "熱門排隊名店，建議使用 Hot Pepper 預約", map: "博多牛まぶし武蔵 天神店" },
+          { time: "14:30 - 17:00", title: "景點：天神地下街與聖誕市集", transit: "地鐵返回天神", budget: "自由消費", highlight: "天神中央公園與貴賓館前廣場濃濃聖誕氛圍", map: "天神中央公園" },
+          { time: "17:30 - 19:30", title: "晚餐：牛雜鍋 一藤 (天神店/博多店)", transit: "步行", budget: "約 ¥3,500–5,000/人", highlight: "福岡必吃濃郁味噌風味牛腸鍋", map: "牛雜鍋 一藤 天神店" },
+          { time: "20:00", title: "漫步返回飯店休息", transit: "步行", budget: "-", highlight: "第一天早點休息充飽電", map: "福岡天神東方快捷飯店" }
+        ]
+      },
+      {
+        day: 2,
+        date: "12/23 (週三)",
+        title: "夢幻晨間爐端燒 ➔ 海之中道水族館 ➔ 爆漿明太子麵包 ➔ 質感牛舌燒肉",
+        events: [
+          { time: "08:30 - 10:00", title: "早餐：Robata no Ito Okashi", transit: "地鐵七隈線至藥院大通站", budget: "約 ¥2,200–4,500/人", highlight: "【完全預約制】現烤銀鮭與精緻土鍋飯", map: "炉端ノいとおかし" },
+          { time: "10:30 - 14:00", title: "景點：海之中道水族館 & 海景公園", transit: "搭車前往海之中道站 (40-50分)", budget: "門票 ¥2,500/人", highlight: "無敵海景、海豚表演與療癒水母缸", map: "海之中道水族館" },
+          { time: "14:30 - 15:15", title: "下午茶：full full 明太子麵包", transit: "返回市區", budget: "約 ¥400–800/人", highlight: "【LINE預約】外皮酥脆、內餡爆漿明太子法國麵包", map: "full full 天神" },
+          { time: "15:30 - 17:30", title: "天神商圈悠閒漫步 / 聖誕市集", transit: "步行", budget: "自由", highlight: "天神商圈輕鬆散步喝咖啡", map: "天神地下街" },
+          { time: "18:30 - 20:30", title: "晚餐：AGITO HIRAO (牛舌燒肉)", transit: "地鐵至藥院站或西鐵平尾站", budget: "約 ¥5,000–8,000/人", highlight: "厚切炭燒牛舌，口感彈牙絕頂", map: "AGITO HIRAO" }
+        ]
+      },
+      {
+        day: 3,
+        date: "12/24 (週四)",
+        title: "太宰府古都漫遊 ➔ 霸氣一本鰻 ➔ 百萬夜景與博多烤雞皮",
+        events: [
+          { time: "09:30 - 12:30", title: "景點：太宰府天滿宮", transit: "西鐵福岡站搭電車至太宰府站 (30分)", budget: "車資 ¥420", highlight: "參道漫步、現烤梅枝餅、星巴克", map: "太宰府天滿宮" },
+          { time: "13:00 - 14:30", title: "午餐：鰻魚三代目源內", transit: "西鐵返回天神市區", budget: "約 ¥3,500–5,500/人", highlight: "整尾蒲燒「一本鰻魚飯」，外酥內嫩", map: "うなぎ 三代目 源内" },
+          { time: "14:30 - 16:00", title: "天神商圈平安夜漫遊", transit: "步行", budget: "自由", highlight: "感受濃厚平安夜街頭氣氛", map: "天神商圈" },
+          { time: "16:00 - 17:00", title: "前往北九州皿倉山 (提早出發)", transit: "JR博多站搭JR至八幡站", budget: "JR車資", highlight: "提早卡位欣賞魔幻時刻夕陽", map: "皿倉山纜車" },
+          { time: "17:00 - 19:30", title: "重頭戲：皿倉山新三大百萬夜景", transit: "纜車", budget: "纜車門票", highlight: "180度北九州百萬夜景，浪漫破表！", map: "皿倉山展望台" },
+          { time: "20:30 - 22:00", title: "平安夜宵夜：Kawaya 祇園店", transit: "JR返回市區至祇園站", budget: "約 ¥2,500–3,500/人", highlight: "博多名物！六天反覆醃烤酥脆烤雞皮", map: "かわ屋 祇園店" }
+        ]
+      },
+      {
+        day: 4,
+        date: "12/25 (週五)",
+        title: "極味屋漢堡排 ➔ 鐵板牛腸老店 ➔ 港灣溫泉放鬆",
+        events: [
+          { time: "10:30 - 12:30", title: "午餐：極味屋 博多店 (極味や)", transit: "地鐵博多站 (巴士總站1F)", budget: "約 ¥1,500–2,500/人", highlight: "伊萬里和牛生漢堡排，鐵板現煎", map: "極味や 博多店" },
+          { time: "13:00 - 16:30", title: "聖誕購物與咖啡巡禮", transit: "步行 / 公車", budget: "自由", highlight: "JR博多城、阪急百貨採買伴手禮", map: "JR博多城" },
+          { time: "17:30 - 19:30", title: "晚餐：博多牛雜SHO總本店", transit: "中洲川端站 / 吳服町站步行", budget: "約 ¥3,500–5,000/人", highlight: "【預約】味噌鐵板牛腸、金黃一口煎餃、雜炊", map: "博多もつ将総本店" },
+          { time: "20:00 - 22:00", title: "放鬆夜湯：港溫泉 波葉之湯", transit: "搭公車約15分鐘直達", budget: "門票約 ¥1,000–1,200", highlight: "港灣旁天然露天溫泉與岩盤浴舒緩雙腳", map: "波葉之湯" }
+        ]
+      },
+      {
+        day: 5,
+        date: "12/26 (週六)",
+        title: "飯店 Check-out ➔ 順暢前往機場",
+        events: [
+          { time: "08:30 - 09:30", title: "飯店 Check-out", transit: "步行", budget: "-", highlight: "整理戰利品與行李準備搭機", map: "福岡天神東方快捷飯店" },
+          { time: "10:00", title: "抵達福岡機場", transit: "地鐵空港線至國內線轉接駁車", budget: "地鐵 ¥260", highlight: "預留 30-40 分鐘轉乘與報到", map: "福岡機場國際線" },
+          { time: "12:10", title: "順利搭機起飛", transit: "班機", budget: "-", highlight: "結束豐富的福岡美食假期！", map: "福岡機場" }
+        ]
+      }
+    ];
+
+    let itineraryData = JSON.parse(JSON.stringify(defaultItinerary));
+    let shoppingItems = [
+      { id: 1, name: "茅乃舍高湯包", category: "伴手禮/美食", note: "博多限定飛魚高湯包 x2", image: "", bought: false },
+      { id: 2, name: "明太子仙貝 (めんべい)", category: "伴手禮/美食", note: "原味與辛口大盒裝", image: "", bought: true }
+    ];
+    let favorites = [
+      { id: 1, name: "一蘭拉麵總本店 (中洲)", category: "美食", note: "24小時營業，隨時可以去吃" },
+      { id: 2, name: "大濠公園散步與星巴克", category: "景點", note: "白天散步喝咖啡的好去處" },
+      { id: 3, name: "Bic Camera 天神2號館", category: "購物", note: "買家電藥妝備案" }
+    ];
+    let members = ["我", "小明", "小華"];
+    let expenses = [
+      { id: 1, date: "2026-12-22", item: "極味屋漢堡排", amount: 4500, payer: "我", participants: ["我", "小明", "小華"] },
+      { id: 2, date: "2026-12-22", item: "地下街聖誕熱紅酒", amount: 1800, payer: "小明", participants: ["小明", "小華"] }
+    ];
+    let prepItems = [
+      { id: 1, text: "Robata no Ito Okashi (Day 2 早餐完全預約)", done: true, category: "行前預約" },
+      { id: 2, text: "博多牛雜SHO總本店 (Day 4 晚餐預約)", done: true, category: "行前預約" },
+      { id: 3, text: "full full 明太子麵包 (LINE預約)", done: false, category: "行前預約" },
+      { id: 4, text: "牛雜鍋 一藤 (官網訂位)", done: false, category: "行前預約" },
+      { id: 5, text: "護照與日圓現金/IC卡 (Suica/ICOCA)", done: true, category: "必備證件" },
+      { id: 6, text: "保暖保暖衣物與舒適走路鞋", done: false, category: "個人物品" }
+    ];
+
+    // 從本機載入儲存的資料
+    function loadLocalData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.itineraryData) itineraryData = parsed.itineraryData;
+          if (parsed.shoppingItems) shoppingItems = parsed.shoppingItems;
+          if (parsed.favorites) favorites = parsed.favorites;
+          if (parsed.members) members = parsed.members;
+          if (parsed.expenses) expenses = parsed.expenses;
+          if (parsed.prepItems) prepItems = parsed.prepItems;
+        } catch (e) {
+          console.log("解析本機資料失敗");
+        }
+      }
+    }
+
+    // 儲存到本機
+    function saveLocalData() {
+      const data = { itineraryData, shoppingItems, favorites, members, expenses, prepItems };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    window.onload = function() {
+      const savedUrl = getGasUrl();
+      if (savedUrl) {
+        document.getElementById('gas-url-input').value = savedUrl;
+      }
+
+      loadLocalData();
+
+      renderItinerary(0);
+      renderShoppingList();
+      renderFavorites();
+      renderMembers();
+      renderExpenses();
+      renderPrepList();
+      
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('exp-date').value = todayStr;
+    };
+
+    // --- 本地檔案備份與還原功能 ---
+    function exportBackupFile() {
+      const data = { itineraryData, shoppingItems, favorites, members, expenses, prepItems };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `fukuoka_trip_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast("已成功下載備份檔案！");
+    }
+
+    function importBackupFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.itineraryData) itineraryData = imported.itineraryData;
+          if (imported.shoppingItems) shoppingItems = imported.shoppingItems;
+          if (imported.favorites) favorites = imported.favorites;
+          if (imported.members) members = imported.members;
+          if (imported.expenses) expenses = imported.expenses;
+          if (imported.prepItems) prepItems = imported.prepItems;
+
+          saveLocalData();
+          renderItinerary(0);
+          renderShoppingList();
+          renderFavorites();
+          renderMembers();
+          renderExpenses();
+          renderPrepList();
+
+          showToast("備份還原成功！");
+        } catch (err) {
+          showToast("檔案格式錯誤，還原失敗！", "error");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // --- 雲端備份與還原管理 ---
+    function getGasUrl() {
+      return localStorage.getItem('fukuoka_gas_url') || '';
+    }
+
+    function saveGasUrl() {
+      const url = document.getElementById('gas-url-input').value.trim();
+      localStorage.setItem('fukuoka_gas_url', url);
+      showToast("雲端備份網址已成功儲存！");
+    }
+
+    async function testGasConnection() {
+      const url = getGasUrl();
+      if (!url) {
+        showToast("請先輸入並儲存網址！", "error");
+        return;
+      }
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.status === "success") {
+          showToast("連線成功！雲端試算表運作正常。");
+        } else {
+          showToast("連線回傳異常，請檢查部署設定。", "error");
+        }
+      } catch (err) {
+        showToast("連線失敗，請檢查網址或權限。", "error");
+      }
+    }
+
+    // 手動雲端上傳
+    async function syncToCloud() {
+      const url = getGasUrl();
+      if (!url) {
+        showToast("尚未設定雲端備份網址，請先至設定填入！", "error");
+        switchTab('settings');
+        return;
+      }
+
+      const payload = { itineraryData, shoppingItems, favorites, members, expenses, prepItems };
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.status === "success") {
+          showToast("手動雲端備份成功！");
+        } else {
+          showToast("備份失敗：" + result.message, "error");
+        }
+      } catch (error) {
+        console.error(error);
+        showToast("連線雲端失敗，請檢查網路設定。", "error");
+      }
+    }
+
+    // 手動從雲端下載最新資料
+    async function loadFromCloud(isManual = false) {
+      const url = getGasUrl();
+      if (!url) {
+        if (isManual) {
+          showToast("尚未設定雲端備份網址！", "error");
+          switchTab('settings');
+        }
+        return;
+      }
+
+      try {
+        const response = await fetch(url);
+        const result = await response.json();
+        if (result.status === "success" && result.data && Object.keys(result.data).length > 0) {
+          if (result.data.itineraryData) itineraryData = result.data.itineraryData;
+          if (result.data.shoppingItems) shoppingItems = result.data.shoppingItems;
+          if (result.data.favorites) favorites = result.data.favorites;
+          if (result.data.members) members = result.data.members;
+          if (result.data.expenses) expenses = result.data.expenses;
+          if (result.data.prepItems) prepItems = result.data.prepItems;
+          
+          saveLocalData();
+          renderItinerary(0);
+          renderShoppingList();
+          renderFavorites();
+          renderMembers();
+          renderExpenses();
+          renderPrepList();
+
+          if (isManual) {
+            showToast("已成功從雲端下載最新資料！");
+          }
+        } else if (isManual) {
+          showToast("雲端目前沒有備份資料。", "error");
+        }
+      } catch (e) {
+        if (isManual) {
+          showToast("無法連線至雲端，請檢查網址或網路。", "error");
+        }
+      }
+    }
+
+    // --- 頁籤切換核心邏輯 ---
+    function switchTab(tabName) {
+      const tabs = ['itinerary', 'shopping', 'favorites', 'expense', 'prep', 'settings'];
+      tabs.forEach(t => {
+        const section = document.getElementById(`tab-${t}`);
+        const navBtn = document.getElementById(`nav-${t}`);
+        if (section) section.classList.add('hidden');
+        if (navBtn) navBtn.classList.remove('active-tab', 'text-orange-500');
+      });
+
+      const targetSection = document.getElementById(`tab-${tabName}`);
+      const targetNav = document.getElementById(`nav-${tabName}`);
+
+      if (targetSection) targetSection.classList.remove('hidden');
+      if (targetNav) targetNav.classList.add('active-tab');
+      
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) mainContent.scrollTop = 0;
+    }
+
+    // --- 行程頁邏輯（含上下排序與時間修改） ---
+    function filterDay(dayNum) {
+      document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active-day'));
+      document.getElementById(`day-btn-${dayNum}`).classList.add('active-day');
+      renderItinerary(dayNum);
+    }
+
+    function renderItinerary(filterDayNum) {
+      const listContainer = document.getElementById('itinerary-list');
+      listContainer.innerHTML = '';
+
+      const filtered = filterDayNum === 0 
+        ? itineraryData 
+        : itineraryData.filter(d => d.day === filterDayNum);
+
+      filtered.forEach(dayGroup => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'sticky top-11 z-10 -ml-6 pl-6 bg-zinc-950/90 backdrop-blur py-1.5 border-b border-zinc-800/80 mb-3';
+        dayHeader.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="bg-orange-500 text-white font-black text-xs px-2 py-0.5 rounded">Day ${dayGroup.day}</span>
+            <span class="text-xs font-bold text-zinc-300">${dayGroup.date}</span>
+          </div>
+          <p class="text-[11px] text-orange-400 font-medium mt-0.5">${dayGroup.title}</p>
+        `;
+        listContainer.appendChild(dayHeader);
+
+        dayGroup.events.forEach((evt, evtIndex) => {
+          const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(evt.map)}`;
+          const card = document.createElement('div');
+          card.className = 'relative mb-4 bg-zinc-900 border border-zinc-800/80 rounded-2xl p-3.5 shadow-sm space-y-2';
+          card.innerHTML = `
+            <div class="absolute -left-[31px] top-4 w-2.5 h-2.5 rounded-full bg-orange-500 border-2 border-zinc-950"></div>
+            
+            <div class="flex justify-between items-center gap-2">
+              <div class="flex items-center gap-1.5 flex-1">
+                <input type="text" id="time-${dayGroup.day}-${evtIndex}" value="${evt.time}" class="bg-zinc-950 text-orange-400 font-bold text-xs px-2 py-0.5 rounded-md border border-orange-500/20 w-28 focus:outline-none focus:border-orange-500">
+                <button onclick="saveEventTime(${dayGroup.day}, ${evtIndex})" class="text-[10px] text-zinc-400 hover:text-orange-400 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700">儲存</button>
+              </div>
+
+              <div class="flex items-center gap-1">
+                <button onclick="moveEvent(${dayGroup.day}, ${evtIndex}, -1)" ${evtIndex === 0 ? 'disabled class="opacity-20 text-zinc-500 px-1.5 py-0.5 text-xs"' : 'class="text-zinc-400 hover:text-orange-400 bg-zinc-800 px-1.5 py-0.5 rounded text-xs border border-zinc-700"'}>▲</button>
+                <button onclick="moveEvent(${dayGroup.day}, ${evtIndex}, 1)" ${evtIndex === dayGroup.events.length - 1 ? 'disabled class="opacity-20 text-zinc-500 px-1.5 py-0.5 text-xs"' : 'class="text-zinc-400 hover:text-orange-400 bg-zinc-800 px-1.5 py-0.5 rounded text-xs border border-zinc-700"'}>▼</button>
+                
+                <a href="${mapUrl}" target="_blank" class="text-xs text-zinc-400 hover:text-orange-500 flex items-center gap-1 bg-zinc-800 px-2 py-0.5 rounded-lg border border-zinc-700/50 ml-1">
+                  <i class="fa-solid fa-location-dot text-orange-500"></i> 地圖
+                </a>
+              </div>
+            </div>
+
+            <h4 class="text-xs font-bold text-white tracking-wide">${evt.title}</h4>
+            <div class="text-[11px] text-zinc-400 space-y-1">
+              <p><i class="fa-solid fa-person-walking-luggage mr-1 text-zinc-500"></i> ${evt.transit}</p>
+              <p><i class="fa-solid fa-yen-sign mr-1 text-zinc-500"></i> ${evt.budget}</p>
+              
+              <div class="mt-2">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-[10px] text-zinc-500 flex items-center gap-1"><i class="fa-solid fa-pen-to-square text-orange-500"></i> 自訂備忘錄：</span>
+                  <button onclick="saveEventHighlight(${dayGroup.day}, ${evtIndex})" class="text-[10px] text-orange-400 hover:text-orange-300 font-semibold bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">儲存備忘</button>
+                </div>
+                <textarea id="highlight-${dayGroup.day}-${evtIndex}" class="w-full bg-zinc-950/80 text-orange-300/90 text-xs p-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-orange-500 resize-none" rows="2" placeholder="點此輸入備忘錄、預約密碼或注意事項...">${evt.highlight || ''}</textarea>
+              </div>
+            </div>
+          `;
+          listContainer.appendChild(card);
+        });
+      });
+    }
+
+    function moveEvent(dayNum, evtIndex, direction) {
+      const dayGroup = itineraryData.find(d => d.day === dayNum);
+      if (!dayGroup) return;
+
+      const targetIndex = evtIndex + direction;
+      if (targetIndex < 0 || targetIndex >= dayGroup.events.length) return;
+
+      const temp = dayGroup.events[evtIndex];
+      dayGroup.events[evtIndex] = dayGroup.events[targetIndex];
+      dayGroup.events[targetIndex] = temp;
+
+      saveLocalData();
+      renderItinerary(dayNum);
+      showToast("行程順序已調整！");
+    }
+
+    function saveEventTime(dayNum, evtIndex) {
+      const input = document.getElementById(`time-${dayNum}-${evtIndex}`);
+      if (!input) return;
+
+      const dayGroup = itineraryData.find(d => d.day === dayNum);
+      if (dayGroup && dayGroup.events[evtIndex]) {
+        dayGroup.events[evtIndex].time = input.value.trim();
+        saveLocalData();
+        showToast("時間已成功修改！");
+      }
+    }
+
+    function saveEventHighlight(dayNum, evtIndex) {
+      const textarea = document.getElementById(`highlight-${dayNum}-${evtIndex}`);
+      if (!textarea) return;
+
+      const dayGroup = itineraryData.find(d => d.day === dayNum);
+      if (dayGroup && dayGroup.events[evtIndex]) {
+        dayGroup.events[evtIndex].highlight = textarea.value;
+        saveLocalData();
+        showToast("備忘錄已更新！");
+      }
+    }
+
+    // --- 購物清單邏輯 ---
+    let tempShopImageBase64 = "";
+
+    function previewShopImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        tempShopImageBase64 = e.target.result;
+        document.getElementById('shop-img-preview').src = tempShopImageBase64;
+        document.getElementById('shop-img-preview-container').classList.remove('hidden');
+        document.getElementById('shop-img-label').innerText = "已選取照片";
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addShoppingItem() {
+      const name = document.getElementById('shop-item-name').value.trim();
+      const category = document.getElementById('shop-category').value;
+      const note = document.getElementById('shop-note').value.trim();
+
+      if (!name) {
+        showToast("請輸入商品名稱！", "error");
+        return;
+      }
+
+      shoppingItems.push({
+        id: Date.now(),
+        name,
+        category,
+        note,
+        image: tempShopImageBase64,
+        bought: false
+      });
+
+      document.getElementById('shop-item-name').value = '';
+      document.getElementById('shop-note').value = '';
+      document.getElementById('shop-img-input').value = '';
+      document.getElementById('shop-img-preview-container').classList.add('hidden');
+      document.getElementById('shop-img-label').innerText = "上傳參考照片";
+      tempShopImageBase64 = "";
+
+      saveLocalData();
+      renderShoppingList();
+      showToast("已加入購物清單！");
+    }
+
+    function toggleShopBought(id) {
+      const item = shoppingItems.find(i => i.id === id);
+      if (item) {
+        item.bought = !item.bought;
+        saveLocalData();
+        renderShoppingList();
+      }
+    }
+
+    function deleteShopItem(id) {
+      shoppingItems = shoppingItems.filter(i => i.id !== id);
+      saveLocalData();
+      renderShoppingList();
+    }
+
+    function openImageModal(imgSrc) {
+      document.getElementById('lightbox-img').src = imgSrc;
+      document.getElementById('modal-image-lightbox').classList.remove('hidden');
+    }
+
+    function closeImageModal() {
+      document.getElementById('modal-image-lightbox').classList.add('hidden');
+    }
+
+    function renderShoppingList() {
+      const container = document.getElementById('shopping-list');
+      if (shoppingItems.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-zinc-500 text-xs">目前沒有預購商品</div>`;
+        document.getElementById('shop-progress-bar').style.width = `0%`;
+        document.getElementById('shop-progress-text').innerText = `0%`;
+        return;
+      }
+
+      container.innerHTML = shoppingItems.map(item => `
+        <div class="bg-zinc-900 p-3 rounded-2xl border border-zinc-800 flex items-center gap-3">
+          <input type="checkbox" ${item.bought ? 'checked' : ''} onchange="toggleShopBought(${item.id})" class="accent-orange-500 w-5 h-5 rounded cursor-pointer">
+          
+          ${item.image ? `
+            <img src="${item.image}" onclick="openImageModal('${item.image}')" class="w-12 h-12 rounded-xl object-cover border border-zinc-800 cursor-pointer flex-shrink-0">
+          ` : `
+            <div class="w-12 h-12 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-600 flex-shrink-0 text-xs">無圖</div>
+          `}
+
+          <div class="flex-1 space-y-0.5">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] bg-orange-500/10 text-orange-400 border border-orange-500/20 px-1.5 py-0.5 rounded">${item.category}</span>
+              <h5 class="text-xs font-bold ${item.bought ? 'line-through text-zinc-500' : 'text-white'}">${item.name}</h5>
+            </div>
+            ${item.note ? `<p class="text-[11px] ${item.bought ? 'text-zinc-600' : 'text-zinc-400'}">${item.note}</p>` : ''}
+          </div>
+
+          <i class="fa-solid fa-trash-can text-zinc-500 hover:text-red-400 cursor-pointer text-xs ml-1" onclick="deleteShopItem(${item.id})"></i>
+        </div>
+      `).join('');
+
+      const boughtCount = shoppingItems.filter(i => i.bought).length;
+      const totalCount = shoppingItems.length;
+      const percent = totalCount === 0 ? 0 : Math.round((boughtCount / totalCount) * 100);
+
+      document.getElementById('shop-progress-bar').style.width = `${percent}%`;
+      document.getElementById('shop-progress-text').innerText = `${percent}% (${boughtCount}/${totalCount})`;
+    }
+
+    // --- 收藏頁邏輯 ---
+    function renderFavorites() {
+      const container = document.getElementById('favorites-list');
+      if (favorites.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-zinc-500 text-xs">目前沒有收藏的備用地點</div>`;
+        return;
+      }
+
+      container.innerHTML = favorites.map(fav => {
+        const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fav.name)}`;
+        return `
+          <div class="bg-zinc-900 p-3.5 rounded-2xl border border-zinc-800 space-y-2">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2 py-0.5 rounded font-medium">${fav.category}</span>
+                <h5 class="text-xs font-bold text-white">${fav.name}</h5>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <a href="${mapUrl}" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1">
+                  <i class="fa-solid fa-location-dot text-orange-500"></i>地圖
+                </a>
+                <i class="fa-solid fa-trash-can text-zinc-500 hover:text-red-400 cursor-pointer ml-1 text-xs" onclick="deleteFavorite(${fav.id})"></i>
+              </div>
+            </div>
+            ${fav.note ? `<p class="text-[11px] text-zinc-400">${fav.note}</p>` : ''}
+            <button onclick="openAddToItineraryModal(${fav.id})" class="w-full mt-1 bg-zinc-950 hover:bg-orange-500 hover:text-white text-orange-400 text-[11px] font-semibold py-1.5 rounded-xl border border-orange-500/30 transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-calendar-plus"></i>直接加入行程
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addFavorite() {
+      const name = document.getElementById('fav-name').value.trim();
+      const category = document.getElementById('fav-category').value;
+      const note = document.getElementById('fav-note').value.trim();
+
+      if (!name) {
+        showToast("請輸入地點名稱！", "error");
+        return;
+      }
+
+      favorites.push({ id: Date.now(), name, category, note });
+      document.getElementById('fav-name').value = '';
+      document.getElementById('fav-note').value = '';
+      saveLocalData();
+      renderFavorites();
+      showToast("已加入收藏清單！");
+    }
+
+    function deleteFavorite(id) {
+      favorites = favorites.filter(f => f.id !== id);
+      saveLocalData();
+      renderFavorites();
+    }
+
+    let selectedFavForItinerary = null;
+
+    function openAddToItineraryModal(favId) {
+      selectedFavForItinerary = favorites.find(f => f.id === favId);
+      if (!selectedFavForItinerary) return;
+
+      document.getElementById('modal-place-title').innerText = `將「${selectedFavForItinerary.name}」加入行程`;
+      document.getElementById('modal-add-to-itinerary').classList.remove('hidden');
+    }
+
+    function closeAddToItineraryModal() {
+      document.getElementById('modal-add-to-itinerary').classList.add('hidden');
+      selectedFavForItinerary = null;
+    }
+
+    function confirmAddToItinerary() {
+      if (!selectedFavForItinerary) return;
+
+      const targetDayNum = parseInt(document.getElementById('modal-target-day').value);
+      const targetTime = document.getElementById('modal-target-time').value.trim() || "15:00";
+      const targetTransit = document.getElementById('modal-target-transit').value.trim() || "步行";
+
+      const targetDayGroup = itineraryData.find(d => d.day === targetDayNum);
+      if (targetDayGroup) {
+        targetDayGroup.events.push({
+          time: targetTime,
+          title: selectedFavForItinerary.name,
+          transit: targetTransit,
+          budget: "自由消費",
+          highlight: selectedFavForItinerary.note || "由收藏清單加入",
+          map: selectedFavForItinerary.name
+        });
+        targetDayGroup.events.sort((a, b) => a.time.localeCompare(b.time));
+      }
+
+      closeAddToItineraryModal();
+      saveLocalData();
+      renderItinerary(0);
+      switchTab('itinerary');
+      showToast(`已成功將「${selectedFavForItinerary.name}」排入 Day ${targetDayNum}！`);
+    }
+
+    // --- 記帳頁邏輯 ---
+    function renderMembers() {
+      const chipsContainer = document.getElementById('member-chips');
+      chipsContainer.innerHTML = members.map((m, idx) => `
+        <span class="inline-flex items-center gap-1 bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs px-2.5 py-1 rounded-xl">
+          ${m}
+          ${members.length > 1 ? `<i class="fa-solid fa-xmark text-zinc-400 hover:text-red-400 cursor-pointer ml-1" onclick="removeMember(${idx})"></i>` : ''}
+        </span>
+      `).join('');
+
+      const payerSelect = document.getElementById('exp-payer');
+      payerSelect.innerHTML = members.map(m => `<option value="${m}">${m} 付款</option>`).join('');
+
+      const checkboxesContainer = document.getElementById('split-members-checkboxes');
+      checkboxesContainer.innerHTML = members.map(m => `
+        <label class="inline-flex items-center gap-1.5 text-xs text-zinc-300 bg-zinc-900 border border-zinc-800 px-2.5 py-1.5 rounded-lg cursor-pointer">
+          <input type="checkbox" name="split-member" value="${m}" checked class="accent-orange-500 rounded">
+          <span>${m}</span>
+        </label>
+      `).join('');
+    }
+
+    function addMember() {
+      const input = document.getElementById('new-member-input');
+      const name = input.value.trim();
+      if (name && !members.includes(name)) {
+        members.push(name);
+        input.value = '';
+        saveLocalData();
+        renderMembers();
+        calculateSettlement();
+      }
+    }
+
+    function removeMember(index) {
+      if (members.length > 1) {
+        members.splice(index, 1);
+        saveLocalData();
+        renderMembers();
+        calculateSettlement();
+      }
+    }
+
+    function addExpense() {
+      const date = document.getElementById('exp-date').value || new Date().toISOString().split('T')[0];
+      const item = document.getElementById('exp-item').value.trim();
+      const amount = parseFloat(document.getElementById('exp-amount').value);
+      const payer = document.getElementById('exp-payer').value;
+
+      const checkedBoxes = document.querySelectorAll('input[name="split-member"]:checked');
+      const selectedParticipants = Array.from(checkedBoxes).map(cb => cb.value);
+
+      if (!item || isNaN(amount) || amount <= 0) {
+        showToast("請填寫正確的項目名稱與金額！", "error");
+        return;
+      }
+
+      if (selectedParticipants.length === 0) {
+        showToast("請至少勾選一位參與分帳的人員！", "error");
+        return;
+      }
+
+      expenses.push({ id: Date.now(), date, item, amount, payer, participants: selectedParticipants });
+      document.getElementById('exp-item').value = '';
+      document.getElementById('exp-amount').value = '';
+      document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+
+      saveLocalData();
+      renderExpenses();
+      showToast("已成功新增記帳！");
+    }
+
+    function deleteExpense(id) {
+      expenses = expenses.filter(e => e.id !== id);
+      saveLocalData();
+      renderExpenses();
+    }
+
+    function renderExpenses() {
+      const historyContainer = document.getElementById('expense-history');
+      let total = 0;
+
+      historyContainer.innerHTML = expenses.map(exp => {
+        total += exp.amount;
+        return `
+          <div class="flex justify-between items-center bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-white">${exp.item}</span>
+                <span class="text-[10px] text-zinc-500">${exp.date}</span>
+              </div>
+              <p class="text-[10px] text-zinc-400">
+                <span class="text-orange-400">${exp.payer}</span> 付款 ➔ 分帳: ${exp.participants.join(', ')}
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-orange-500">¥${exp.amount.toLocaleString()}</span>
+              <i class="fa-solid fa-trash-can text-zinc-500 hover:text-red-400 cursor-pointer" onclick="deleteExpense(${exp.id})"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('total-expense').innerText = `¥ ${total.toLocaleString()}`;
+      document.getElementById('avg-expense').innerText = `¥ ${members.length ? Math.round(total / members.length).toLocaleString() : 0}`;
+
+      calculateSettlement();
+    }
+
+    function calculateSettlement() {
+      const balances = {};
+      members.forEach(m => balances[m] = 0);
+
+      expenses.forEach(exp => {
+        const payer = exp.payer;
+        const amount = exp.amount;
+        const parts = exp.participants;
+
+        if (parts.length > 0) {
+          const splitShare = amount / parts.length;
+          if (balances[payer] !== undefined) balances[payer] += amount;
+          parts.forEach(p => {
+            if (balances[p] !== undefined) balances[p] -= splitShare;
+          });
+        }
+      });
+
+      const debtors = [];
+      const creditors = [];
+
+      Object.keys(balances).forEach(m => {
+        const bal = balances[m];
+        if (bal < -0.01) debtors.push({ name: m, amount: -bal });
+        else if (bal > 0.01) creditors.push({ name: m, amount: bal });
+      });
+
+      const settlements = [];
+      let i = 0, j = 0;
+
+      while (i < debtors.length && j < creditors.length) {
+        const debtor = debtors[i];
+        const creditor = creditors[j];
+        const transfer = Math.min(debtor.amount, creditor.amount);
+
+        settlements.push(`${debtor.name} 應給 ${creditor.name} <span class="font-bold text-orange-500">¥${Math.round(transfer).toLocaleString()}</span>`);
+
+        debtor.amount -= transfer;
+        creditor.amount -= transfer;
+
+        if (debtor.amount < 0.01) i++;
+        if (creditor.amount < 0.01) j++;
+      }
+
+      const settlementContainer = document.getElementById('settlement-list');
+      if (settlements.length === 0) {
+        settlementContainer.innerHTML = `<p class="text-zinc-500">目前費用已結清！</p>`;
+      } else {
+        settlementContainer.innerHTML = settlements.map(s => `
+          <div class="bg-zinc-950 p-2 rounded-lg border border-zinc-800 flex justify-between items-center">
+            <span>${s}</span>
+            <i class="fa-solid fa-arrow-right-arrow-left text-zinc-600 text-xs"></i>
+          </div>
+        `).join('');
+      }
+    }
+
+    // --- 準備清單邏輯 ---
+    function renderPrepList() {
+      const container = document.getElementById('prep-list');
+      container.innerHTML = prepItems.map(item => `
+        <div class="flex items-center justify-between bg-zinc-900 p-3 rounded-xl border border-zinc-800 text-xs">
+          <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="togglePrep(${item.id})" class="accent-orange-500 w-4 h-4 rounded">
+            <span class="${item.done ? 'line-through text-zinc-500' : 'text-zinc-200'}">${item.text}</span>
+          </label>
+          <i class="fa-solid fa-trash-can text-zinc-500 hover:text-red-400 cursor-pointer ml-2" onclick="deletePrep(${item.id})"></i>
+        </div>
+      `).join('');
+
+      const completed = prepItems.filter(i => i.done).length;
+      const total = prepItems.length;
+      const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+      document.getElementById('prep-progress-bar').style.width = `${percent}%`;
+      document.getElementById('prep-progress-text').innerText = `${percent}%`;
+    }
+
+    function togglePrep(id) {
+      const item = prepItems.find(i => i.id === id);
+      if (item) item.done = !item.done;
+      saveLocalData();
+      renderPrepList();
+    }
+
+    function addPrepItem() {
+      const input = document.getElementById('new-prep-input');
+      const text = input.value.trim();
+      if (text) {
+        prepItems.push({ id: Date.now(), text, done: false, category: '自訂' });
+        input.value = '';
+        saveLocalData();
+        renderPrepList();
+        showToast("已新增準備事項！");
+      }
+    }
+
+    function deletePrep(id) {
+      prepItems = prepItems.filter(i => i.id !== id);
+      saveLocalData();
+      renderPrepList();
+    }
+  </script>
+</body>
+</html>
